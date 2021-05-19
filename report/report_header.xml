@@ -1,0 +1,11 @@
+<odoo>
+
+     <report
+            model="sale.order"
+            string="recibo de venda"
+            name="venda_carros.sales_check_template_report"
+            file="venda_carros.sales_check_template_report"
+            report_type="qweb-pdf"
+            id="sales_check_template_report_id"
+    />
+</odoo>

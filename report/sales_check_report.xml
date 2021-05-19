@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="sales_check_template_report">
+        <t t-call="web.html_container">
+            <t t-foreach="docs " t-as="doc">
+                <t t-set="doc_number" t-value="doc.name"/>
+                <t t-set="doc_state" t-value="doc.state"/>
+                <t t-set="doc_header" t-value="1"/>
+                <t t-call="web.external_layout">
+                    <style>
+                        tbody td, tbody th {
+                        font-size: 14px !important;
+                        color: #000 !important;
+                        }
+                        tbody td {
+                        padding: 5px 5px 5px 10px !important;
+                        font-weight: 400 !important;
+                        }
+                        tbody th {
+                        font-size: 16px !important;
+                        padding: 5px 5px 5px 5px !important;
+                        font-weight: 700 !important ;
+                        border-bottom: 1px solid #000 !important;
+                        }
+                        table {
+                        border: none !important;
+                        }
+                        .rep_title{
+                        font-size: 16px !important;
+                        font-weight: 600 !important;
+                        margin: 0px 0px 25px 0px !important;
+                        }
+                    </style>
+                    <div class="page pt-4">
+                        <div class="mt-2 pt-0 col-12"></div>
+                        <div class="col-12 pt-0 text-left">
+                            <div class=" text-uppercase ">
+
+                            </div>
+                            <div class="text-right">
+                                <div class="pl-5 " style="float:right;font-size:20px">
+                                    <p class="text-left font-weight-bold">
+                                        Recibo nº: <t t-esc="doc.name"/>
+<!--                                        <t t-foreach="doc.transaction_ids" t-as="transaction">-->
+<!--                                            <strong>-->
+<!--                                                <t t-esc="transaction.tx_id"/>-->
+<!--                                            </strong>-->
+<!--                                        </t>-->
+                                        <br/>
+                                        Data:
+                                        <t t-esc="doc.date_today()"/>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 pl-5 pt-1 text-uppercase">
+                            <!-- Informação Pesssoal -->
+                            <table class="table table-borderless ">
+                                <tbody>
+                                    <tr>
+                                        <th class="text-center text-uppercase" colspan="4">
+                                            Itens vendidos
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th class="">
+                                            Producto
+                                        </th>
+                                        <th class="">
+                                            Quantidade
+                                        </th>
+                                        <th class="">
+                                            Preço unitário
+                                        </th>
+                                        <th class="">
+                                            Total
+                                        </th>
+                                    </tr>
+
+                                    <t t-foreach="doc.order_line" t-as="line">
+                                        <tr>
+                                            <td class=" font-weight-normal" t-esc="line.product_id.name"/>
+                                            <td class="" t-esc="line.product_uom_qty"/>
+                                            <td class="">
+                                                <t t-esc="doc.money_formart(line.price_unit)"/>
+                                                <t t-esc="line.currency_id.name"/>
+                                            </td>
+                                            <td class="">
+                                                <t t-esc="doc.money_formart(line.price_subtotal)"/>
+                                                <t t-esc="line.currency_id.name"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <tr class="font-weight-bold">
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr class="font-weight-bold">
+                                        <td></td>
+                                        <td class=""></td>
+                                        <td class="font-weight-bold">
+                                            <strong>Total a pagar</strong>
+                                        </td>
+                                        <td class="">
+                                            <t t-esc="doc.money_formart(doc.amount_total)"/>
+                                            <t t-esc="doc.currency_id.name"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <div class="pt-5 col-12"></div>
+                        <div class=" col-12 pt-1 text-center ">
+                            <img
+                                    t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s'%('QR', '%s' % doc.name, 200, 200)"
+                                    style="width:200px;height:200px"/>
+                        </div>
+                    </div>
+
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

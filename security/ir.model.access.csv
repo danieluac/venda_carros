@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_venda_carros_venda_carros,venda_carros.venda_carros,model_venda_carros_venda_carros,base.group_user,1,1,1,1

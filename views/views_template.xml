@@ -1,0 +1,559 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <template id="address_template_form_n360_sale" inherit_id="website_sale.address" customize_show="True" active="True">
+        <xpath expr="//div[@class='container oe_website_sale py-2']" position="replace">
+            <div id="wrap">
+                <div class="container oe_website_sale py-2">
+                    <div class="row">
+                        <div class="col-12">
+                            <t t-call="website_sale.wizard_checkout">
+                                <t t-set="step" t-value="20"/>
+                            </t>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4 col-xl-auto order-xl-2 d-none d-xl-block pull-right">
+                            <t t-call="n360_sale.cart_summary"/>
+                        </div>
+                        <div class="col-7">
+                            <form action="/shop/address" method="post" class="checkout_autoformat ag_company_name">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <div class="form-row">
+                                    <div t-attf-class="form-group #{error.get('company_name') and 'o_has_error' or ''} col-lg-6">
+                                        <label class="col-form-label" for="company_name">Company Name</label>
+                                        <input type="text" name="company_name"
+                                               t-attf-class="form-control #{error.get('company_name') and 'is-invalid' or ''} rounded-0"
+                                               t-att-value="'company_name' in checkout and checkout['company_name']"
+                                               t-att-readonly="'1' if 'vat' in checkout and checkout['vat'] and not can_edit_vat else None"
+                                               t-att-title="'Changing company name is not allowed once document(s) have been issued for your account. Please contact us directly for this operation.' if 'vat' in checkout and checkout['vat'] and not can_edit_vat else None"
+                                               id="title"  required="required"/>
+                                    </div>
+                                    <div t-attf-class="form-group col-lg-6">
+                                        <div t-attf-classclass="form-group col-md-6">
+                                            <label class="col-form-label">Industry</label>
+                                            <select id="industry_id" name="industry_id"
+                                                    t-attf-class="form-control rounded-0">
+                                                <option value="">Industry...</option>
+                                                <t t-foreach="industries" t-as="industry">
+                                                    <option t-att-value="industry.id"
+                                                            t-att-selected="industry.id == (industry and industry.id or -1)">
+                                                        <t t-esc="industry.name"/>
+                                                    </option>
+                                                </t>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="w-100"/>
+                                    <div t-attf-class="form-group #{error.get('phone') and 'o_has_error' or ''} col-lg-6"
+                                         id="div_phone">
+                                        <label class="col-form-label" for="phone">Phone</label>
+                                        <input type="tel" name="phone"
+                                               t-attf-class="form-control #{error.get('phone') and 'is-invalid' or ''} rounded-0"
+                                               t-att-value="'phone' in checkout and checkout['phone']"/>
+                                    </div>
+
+                                    <div t-attf-class="form-group #{error.get('street') and 'o_has_error' or ''} col-lg-6 div_street">
+                                        <label class="col-form-label" for="street">Street
+                                            <span class="d-none d-md-inline">and Number</span>
+                                        </label>
+                                        <input type="text" name="street"
+                                               t-attf-class="form-control #{error.get('street') and 'is-invalid' or ''} rounded-0"
+                                               t-att-value="'street' in checkout and checkout['street']"/>
+                                    </div>
+                                    <div t-attf-class="form-group #{error.get('street2') and 'o_has_error' or ''} col-lg-6 div_street2">
+                                        <label class="col-form-label" for="street2">Street 2</label>
+                                        <input type="text" name="street2"
+                                               t-attf-class="form-control #{error.get('street2') and 'is-invalid' or ''} rounded-0"
+                                               t-att-value="'street2' in checkout and checkout['street2']"/>
+                                    </div>
+
+                                    <div t-attf-class="form-group #{error.get('city') and 'o_has_error' or ''} col-md-6 div_city">
+                                        <label class="col-form-label" for="city">City</label>
+                                        <input type="text" name="city"
+                                               t-attf-class="form-control #{error.get('city') and 'is-invalid' or ''} rounded-0"
+                                               t-att-value="'city' in checkout and checkout['city']"/>
+                                    </div>
+                                    <div class="w-100"/>
+                                    <div t-attf-class="form-group #{error.get('country_id') and 'o_has_error' or ''} col-lg-6 div_country">
+                                        <label class="col-form-label" for="country_id">Country</label>
+                                        <select id="country_id" name="country_id"
+                                                t-attf-class="form-control #{error.get('country_id') and 'is-invalid' or ''} rounded-0">
+                                            <option value="">Country...</option>
+                                            <t t-foreach="countries" t-as="c">
+                                                <option t-att-value="c.id"
+                                                        t-att-selected="c.id == (country and country.id or -1)">
+                                                    <t t-esc="c.name"/>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                    <div t-attf-class="form-group #{error.get('state_id') and 'o_has_error' or ''} col-lg-6 div_state"
+                                         t-att-style="(not country or not country.state_ids) and 'display: none'">
+                                        <label class="col-form-label" for="state_id">State / Province</label>
+                                        <select name="state_id"
+                                                t-attf-class="form-control #{error.get('state_id') and 'is-invalid' or ''} rounded-0"
+                                                data-init="1">
+                                            <option value="">State / Province...</option>
+                                            <t t-foreach="country and country.state_ids or []" t-as="s">
+                                                <option t-att-value="s.id"
+                                                        t-att-selected="s.id == ('state_id' in checkout and country and checkout['state_id'] != '' and int(checkout['state_id']))">
+                                                    <t t-esc="s.name"/>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
+
+                                    <div class="w-100"/>
+                                    <div t-attf-class="form-group #{error.get('name') and 'o_has_error' or ''} col-lg-6 div_name">
+                                        <label class="col-form-label" for="name">Name</label>
+                                        <input type="text" name="name"
+                                               t-attf-class="form-control #{error.get('name') and 'is-invalid' or ''} rounded-0"
+                                               t-att-value="'name' in checkout and checkout['name']"/>
+                                    </div>
+                                    <div t-attf-class="form-group #{error.get('email') and 'o_has_error' or ''} col-lg-6"
+                                         id="div_email">
+                                        <label class="col-form-label" for="email">Email</label>
+                                        <input type="email" name="email"
+                                               t-attf-class="form-control #{error.get('email') and 'is-invalid' or ''} rounded-0"
+                                               t-att-value="'email' in checkout and checkout['email']"/>
+                                    </div>
+                                    <t t-if="mode == ('new', 'billing') and not only_services">
+                                        <div class="col-lg-12">
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" id='shipping_use_same' class="mr8"
+                                                           name='use_same' value="1" checked='checked'/>Ship to the same
+                                                    address
+                                                    <span class='ship_to_other text-muted' style="display: none">&amp;nbsp;(
+                                                        <i>Your shipping address will be requested later)</i>
+                                                    </span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                                <input type="hidden" name="submitted" value="1"/>
+                                <input type="hidden" name="partner_id" t-att-value="partner_id or '0'"/>
+                                <input type="hidden" name="callback" t-att-value="callback"/>
+                                <input type="hidden" name="field_required" t-att-value="'phone,name'"/>
+
+                                <div class="col-xs-8 col-sm-9 col-md-12 alert alert-primary rounded-0" role="alert">
+                                    <input type="checkbox" value="1" onclick="myFunction()"/>
+                                    Concordar com os
+                                    <a href="#" data-toggle="modal" data-target="#t_and_c_m">
+                                        <strong class="label label-primary">Termos e condições</strong>
+                                    </a>
+                                </div>
+
+                                <div class="modal fade" id="t_and_c_m" tabindex="-1" role="dialog"
+                                     aria-labelledby="myModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-hidden="true">×
+                                                </button>
+                                                <h4 class="modal-title" id="myModalLabel">Terms Conditions</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Similique,
+                                                    itaque, modi, aliquam nostrum at sapiente consequuntur natus odio
+                                                    reiciendis perferendis rem nisi tempore possimus ipsa porro delectus
+                                                    quidem dolorem ad.
+                                                </p>
+                                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Similique,
+                                                    itaque, modi, aliquam nostrum at sapiente consequuntur natus odio
+                                                    reiciendis perferendis rem nisi tempore possimus ipsa porro delectus
+                                                    quidem dolorem ad.
+                                                </p>
+                                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Similique,
+                                                    itaque, modi, aliquam nostrum at sapiente consequuntur natus odio
+                                                    reiciendis perferendis rem nisi tempore possimus ipsa porro delectus
+                                                    quidem dolorem ad.
+                                                </p>
+                                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Similique,
+                                                    itaque, modi, aliquam nostrum at sapiente consequuntur natus odio
+                                                    reiciendis perferendis rem nisi tempore possimus ipsa porro delectus
+                                                    quidem dolorem ad.
+                                                </p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-primary" data-dismiss="modal">Ok
+                                                </button>
+                                            </div>
+                                        </div><!-- /.modal-content -->
+                                    </div><!-- /.modal-dialog -->
+                                </div><!-- /.modal -->
+                                <div class="w-100"/>
+
+                                <div class="d-flex justify-content-between">
+                                    <a role="button"
+                                       t-att-href="mode == ('new', 'billing') and '/shop/cart' or '/shop/checkout'"
+                                       class="btn btn-lg btn-primary mb32 rounded-0">
+                                        <i class="fa fa-chevron-left"/>
+                                        <span>Back</span>
+                                    </a>
+                                    <a role="button" href="#"
+                                       class="btn btn-lg btn-primary mb32 a-submit a-submit-disable a-submit-loading rounded-0 disabled"
+                                       id="myBtn">
+                                        <span>Next</span>
+                                        <i class="fa fa-chevron-right"/>
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+                function myFunction(){
+                $("#myBtn").removeClass('disabled');
+                }
+
+            </script>
+        </xpath>
+    </template>
+    <!--*************************************Template do PriceList Para o Formulário de Subscrição*******************************************************-->
+    <template id="cart_summary" name="Cart right column">
+        <div class="col col-lg-11">
+            <div class="card  tab-card">
+                <div t-if="not website_sale_order or not website_sale_order.website_order_line"
+                     class="alert alert-info">
+                    Your cart is empty!
+                </div>
+                <div class="card  tab-card">
+                    <t t-call="n360_sale.n360_pricelist_list"/>
+                    <div class="card-header tab-card-header">
+                        <table class="table" id="cart_products"
+                               t-if="website_sale_order and website_sale_order.website_order_line">
+                            <tr t-foreach="website_sale_order.website_order_line" t-as="line">
+                                <td class='' colspan="2" t-if="not line.product_id.product_tmpl_id"></td>
+                                <td class='td-qty'>
+                                    <span t-esc="line.product_uom_qty"/>
+                                </td>
+                                <td class='td-product_name' t-if="line.product_id.product_tmpl_id">
+                                    <div>
+                                        <strong t-field="line.name_short"/>
+                                    </div>
+                                </td>
+                                <td class="text-center td-price">
+                                    <span t-field="line.price_reduce_taxexcl" style="white-space: nowrap;"
+                                          t-options="{'widget': 'monetary', 'display_currency': website_sale_order.currency_id}"
+                                          groups="account.group_show_line_subtotals_tax_excluded"/>
+                                    <span t-field="line.price_reduce_taxinc" style="white-space: nowrap;"
+                                          t-options="{'widget': 'monetary', 'display_currency': website_sale_order.currency_id}"
+                                          groups="account.group_show_line_subtotals_tax_included"/>
+                                </td>
+                            </tr>
+                        </table>
+                        <t t-call="n360_sale.total">
+                            <t t-set='redirect' t-value="redirect or '/shop/payment'"></t>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+    <!--***********************************************Template que Modifica a Estrutura do Priclist******************************************************-->
+    <template id="total">
+        <div id="cart_total" t-att-class="extra_class or ''"
+             t-if="website_sale_order and website_sale_order.website_order_line">
+            <table class="table">
+                <tr id="empty">
+                    <t t-if='not no_rowspan'>
+                        <td rowspan="10" class="noborder"/>
+                    </t>
+                    <td class="col-md-2 col-3 noborder"></td>
+                    <td class="col-md-2 col-3 noborder"></td>
+                </tr>
+                <tr id="order_total_untaxed">
+                    <td class="text-right noborder">Subtotal:</td>
+                    <td class="text-xl-right noborder">
+                        <span t-field="website_sale_order.amount_untaxed" style="white-space: nowrap;"
+                              t-options="{'widget': 'monetary', 'display_currency': website_sale_order.currency_id}"/>
+                    </td>
+                </tr>
+                <tr id="order_total_taxes">
+                    <td class="text-right noborder">Taxes:</td>
+                    <td class="text-xl-right noborder">
+                        <span t-field="website_sale_order.amount_tax" style="white-space: nowrap;"
+                              t-options="{'widget': 'monetary', 'display_currency': website_sale_order.currency_id}"/>
+                    </td>
+                </tr>
+                <tr id="order_total">
+                    <td class="text-right">
+                        <strong>Total:</strong>
+                    </td>
+                    <td class="text-xl-right">
+                        <strong t-field="website_sale_order.amount_total"
+                                t-options='{"widget": "monetary", "display_currency": website_sale_order.pricelist_id.currency_id}'/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </template>
+    <!--*****************************************Template Principal Para a Vista do Shop com User Number e Domain*****************************************-->
+    <template id="product" inherit_id="website_sale.products" name="Products">
+        <xpath expr="//div[@id='wrap']" position="replace">
+            <div class="container oe_website_sale">
+                <div class="products_pager form-inline flex-md-nowrap justify-content-between justify-content-md-center">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col col-lg-9">
+                                <div id="users">
+                                    <p>
+                                        <h4 class="text-primary">Choose the Number of
+                                            <b>Users</b>
+                                        </h4>
+                                    </p>
+                                    <t t-foreach="products" t-as="product">
+                                        <t t-if="product.default_code == 'SAAS_USER'">
+                                            <form action="shop/cart/update" method="post" id="number_of_user">
+                                                <input type="hidden" name="csrf_tok en"
+                                                       t-att-value="request.csrf_token()"/>
+                                                <input name="product_id" t-att-value="product.product_variant_id.id"
+                                                       type="hidden"/>
+                                                <div class="css_quantity input-group product-img input_width"
+                                                     contenteditable="false">
+                                                    <input type="number" class="form-control quantity js_check_product input_user_number rounded-0" data-min="1" name="add_qty" t-attf-value="{{user_number}}"/>
+                                                </div>
+                                            </form>
+                                        </t>
+                                    </t>
+                                    <form action="shop/cart/update" method="post" class="ag_n360_sale">
+                                        <input type="hidden" name="csrf_tok en" t-att-value="request.csrf_token()"/>
+
+                                        <p>
+                                            <h4 class="text-primary">Your Company <b>Name</b></h4>
+                                        </p>
+
+                                        <input type="text" name="company_name"
+                                               class="form-control rounded-0"
+                                               id="company_name" placeholder="Company Name" required="required"/>
+                                        <p>
+                                            <h4 class="text-primary">Choose Your Domain <b>Address</b></h4>
+                                        </p>
+                                        <span>WWW.</span>
+                                        <input type="text"
+                                               class="slug rounded-0 form-control quantity "
+                                               aria-label="Text input with select button"
+                                               name="saas_domain_name" id="slug_input"
+                                               t-attf-value="{{selected_domain_name}}" placeholder="Domain Name"/>
+                                        <span id="text" name="selected_domain"><t t-esc="selected_domain"/></span>
+                                        <br></br>
+                                        <input name="product_id" t-att-value="product" type="hidden"/>
+                                        <br></br>
+                                        <!--Todos os Produtos que São Domínios-->
+                                        <t t-foreach=" is_domains" t-as="product">
+                                            <input t-if="product.product_variant_id.id == selected_product_domain_id" type="radio" name="product_domain_name_id"
+                                                   t-att-value="product.product_variant_id.id"
+                                                   checked="checked"
+                                                   t-att-id="product.name" class="a-submit" id="add_to_cart"/>
+                                            <input t-if="product.product_variant_id.id != selected_product_domain_id" type="radio" name="product_domain_name_id"
+                                                   t-att-value="product.product_variant_id.id"
+                                                   t-att-id="product.name" class="a-submit" id="add_to_cart"/>
+                                            <span t-esc="product.name"/>
+                                            <!--<label t-att-for="product.name" t-esc="product.name"/>-->
+                                        </t>
+                                    </form>
+                                </div>
+                            </div>
+                            <t t-call="n360_sale.pricelist_shop_views"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </xpath>
+    </template>
+
+    <!--*****************************************PriceList of shop***************************************************************************************-->
+    <template id="pricelist_shop_views">
+
+        <div class="col col-lg-3">
+            <div class="card  tab-card">
+                <t t-call="n360_sale.n360_pricelist_list"/>
+                <div class="card-header tab-card-header">
+                    <div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="tab-pane-payment-month" role="tabpanel"
+                             aria-labelledby="tab-pane-payment-month-tab">
+
+                            <table class="table">
+                                <t t-foreach="order_lines" t-as="order_line">
+                                    <tr>
+                                        <td>
+                                            <span t-esc="order_line.product_uom_qty"/>
+                                            <b>
+                                                <a t-esc="order_line.name"/>
+                                            </b>
+
+                                        </td>
+                                        <td>
+                                            <span>
+                                                <t t-esc="order_line.price_subtotal"
+                                                   t-options="{'widget': 'monetary', 'display_currency': order_line.currency_id}"/>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <tr>
+                                    <td>
+                                        <b>Total
+                                        </b>
+                                    </td>
+                                    <td class="text-right">
+                                        <b>
+                                            <span t-if="order != []">
+                                                <t t-esc="order.amount_total"
+                                                   t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+
+                                            </span>
+                                            <span t-else="">0.0</span>
+                                        </b>
+                                    </td>
+                                </tr>
+                            </table>
+                            <center>
+                                <a role="button" class="btn btn-primary  rounded-0 d-none d-xl-inline-block"
+                                   href="/shop/address">
+                                    <span class="">Process Checkout</span>
+                                </a>
+                            </center>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!--********************************************Template que Permite Carregar a Lista dos Produtos****************************************************-->
+    <template id="products_n360_sale" inherit_id="website_sale.products">
+        <xpath expr="//div[@id='users']" position="after">
+            <div class="n360_container">
+                <p>
+                    <h4 class="text-primary">Choose Your
+                        <b>Apps</b>
+                    </h4>
+                </p>
+                <div class="container">
+                    <div class="row">
+                        <t t-if="products">
+                            <t t-foreach="products" t-as="product">
+                                <t t-if="product. is_domain != True and product.user_number != True">
+                                    <xpath expr="//t[@t-call='website_sale.products_item']" position="replace">
+                                        <form action="/subscribe/cart/update" method="get">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <input name="product_id"
+                                                   t-att-value="product.product_variant_id.id"
+                                                   type="hidden"/>
+
+                                            <div itemscope="itemscope">
+                                                <div class="card card-pricing  n360_sale_card text-center px-3 mb-3 product-item">
+                                                    <t t-call="n360_sale.n360_products_item"/>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </xpath>
+                                </t>
+                            </t>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+
+    <!--*************************************Template que Carega o Preço e as Imgs dos Produtos bem as checkbox ****************************************-->
+    <template id="n360_products_item" name="Products item">
+        <t t-set="product_href"
+           t-value="keep(product.website_url, page=(pager['page']['num'] if pager['page']['num']&gt;1 else None))"/>
+        <t t-set="combination_info"
+           t-value="product._get_combination_info(only_template=True, add_qty=add_qty or 1, pricelist=pricelist)"/>
+        <form action="/subscribe/cart/update" method="get" class="card oe_product_cart"
+              t-att-data-publish="product.website_published and 'on' or 'off'"
+              itemscope="itemscope">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <div class="card-body p-1 oe_product_image">
+                <a t-att-href="product_href" class="d-block h-100" itemprop="url">
+                    <span t-field="product.image_1920"
+                          t-options="{'widget': 'image', 'preview_image': 'image_1024' if product_image_big else 'image_256'}"
+                          class="d-flex h-100 justify-content-center align-items-center"/>
+                </a>
+            </div>
+            <div class="card-body p-0 text-center o_wsale_product_information">
+                <div class="p-2 o_wsale_product_information_text">
+                    <h6 class="o_wsale_products_item_title">
+                        <a itemprop="name" t-att-content="product.name"
+                           t-field="product.name"/><!--t-att-href="product_href" link para outra rota-->
+                        <a role="button" t-if="not product.website_published" class="btn btn-sm btn-danger"
+                           title="This product is unpublished.">Unpublished
+                        </a>
+                    </h6>
+                    <div class="product_price" itemprop="offers" itemscope="itemscope">
+                        <del t-attf-class="text-danger mr-2 {{'' if combination_info['has_discounted_price'] else 'd-none'}}"
+                             style="white-space: nowrap;" t-esc="combination_info['list_price']"
+                             t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                        <span t-if="combination_info['price']" t-esc="combination_info['price']"
+                              t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                        <span itemprop="price" style="display:none;" t-esc="combination_info['price']"/>
+                        <span itemprop="priceCurrency" style="display:none;" t-esc="website.currency_id.name"/>
+                    </div>
+                    <label for="check" class="check">
+                        <t t-if="product.default_code in selected_products">
+                            <input type="checkbox" class="a-submit" checked="checked" id="add_to_cart"
+                                   t-attf-name="{{product.default_code}}"/>
+                        </t>
+                        <t t-if="product.default_code not in selected_products">
+                            <input type="checkbox" class="a-submit"
+                                   t-attf-name="{{product.default_code}}"
+                                   id="add_to_cart"/>
+                        </t>
+                    </label>
+                </div>
+                <div class="o_wsale_product_btn"/>
+            </div>
+        </form>
+    </template>
+
+    <!--*************************************PriceList do odoo para diferenciar plano anual de Mensal***************************************************-->
+    <template id="n360_pricelist_list" name="Pricelists Dropdown">
+        <t t-set="website_sale_pricelists" t-value="website.get_pricelist_available(show_visible=True)"/>
+        <div t-attf-class="dropdown#{'' if website_sale_pricelists and len(website_sale_pricelists)&gt;1 else ' d-none'} #{_classes}">
+            <t t-set="curr_pl" t-value="website.get_current_pricelist()"/>
+            <a role="button" href="#" class="dropdown-toggle btn btn-primary btn-block rounded-0"
+               data-toggle="dropdown">
+                <t t-esc="curr_pl and curr_pl.name or ' - '"/>
+            </a>
+            <div class="dropdown-menu" role="menu">
+                <t t-foreach="website_sale_pricelists" t-as="pl">
+                    <a role="menuitem" t-att-href="'/shop/change_pricelist/%s' % pl.id" class="dropdown-item">
+                        <span class="switcher_pricelist" t-att-data-pl_id="pl.id" t-esc="pl.name"/>
+                    </a>
+                </t>
+            </div>
+        </div>
+    </template>
+
+    <!--*************************************Function Form**********************************************************************************************-->
+    <function model="ir.model.fields" name="formbuilder_whitelist">
+        <value>res.partner</value>
+        <value eval="[
+                       'name', 'phone', 'email',
+                        'city', 'zip', 'street', 'street2', 'state_id', 'country_id',
+                         'vat', 'company_name','industry_id','comment','com_id','website','mobile','seats_min'
+                      ]"/>
+    </function>
+
+
+    <record id="n360_subscribe_page" model="website.page">
+        <field name="name">Subscribe</field>
+        <field name="website_published">True</field>
+        <field name="url">/Subscribe/</field>
+        <field name="type">qweb</field>
+        <field name="view_id" ref="n360_subscribe_template"/>
+    </record>
+
+</odoo>

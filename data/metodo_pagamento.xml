@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="0">
+
+        <record id="partner_my_company" model="res.partner" context="{'default_is_company': True}">
+            <field name="name">GESTÃO DE VENDAS DE AUTOMÓVEIS</field>
+            <field name="company_id" eval="None"/>
+            <field name="is_company" eval="True"/>
+            <field name="street"></field>
+            <field name="country_id">8</field>
+            <field name="city"></field>
+            <field name="zip"></field>
+            <field name="phone"></field>
+            <field name="email">info@my_company.com</field>
+            <field name="website">www.my_company.com</field>
+            <field name="image_1920" type="base64" file="base/static/img/res_company_logo.png"/>
+        </record>
+
+        <record id="metodo_pagamento_update" model="base.automation">
+            <field name="name">actualização da empresa</field>
+            <field name="model_id" ref="base.model_res_company"/>
+            <field name="sequence">33</field>
+            <field name="trigger">on_create</field>
+            <field name="state">code</field>
+            <field name="filter_pre_domain">[]</field>
+            <field name="filter_domain">[]</field>
+            <field name="code">
+company = env['res.company'].sudo().search([('id', '=', 1)])
+company.write({"name": 'GESTÃO DE VENDAS DE AUTOMÓVEIS', "country_id": 8, "currency_id":env.ref('base.AOA').id, "partner_id": env.ref('venda_carros.partner_my_company').id})
+            </field>
+        </record>
+
+        <record id="account_journal_1" model="account.journal">
+            <field name="name">Transferencia</field>
+            <field name="type">bank</field>
+            <field name="code">TRANS</field>
+        </record>
+
+        <record id="payment_acquirer_1" model="payment.acquirer">
+            <field name="name">Transfêrencia Bancaria</field>
+            <field name="state">enabled</field>
+            <field name="provider">transfer</field>
+            <field name="journal_id" ref="account_journal_1"/>
+            <field name="pending_msg"><![CDATA[
+                <p></p>
+                <h3>Por favor faça o pagamento da encomenda:</h3>
+                <p></p>
+                <p></p>
+                <h3>
+                    <br/>
+                </h3>
+                <ul>
+                    <li>
+                        <h3></h3>
+                        Banco:
+                        <b>BANCO ANGOLANO DE INVESTIMENTOS - BAI</b>
+                    </li>
+                    <li>
+                        <p>Número de conta: 723 120 921 2</p>
+                    </li>
+                    <li>
+                        <p>Titular:&nbsp;<b>GESTÃO DE VENDAS DE AUTOMÓVEIS</b>
+                        </p>
+                    </li>
+                    <li>
+                        <p>IBAN:
+                            <b>AO06 0049 0000 0002 3000 0323 9</b>
+                            <br>
+                        </p>
+                    </li>
+                </ul>
+                <p>
+                    <br>
+                </p>
+                <p>
+                    <b>Sua encomenda será enviada assim que confirmar o pagamento</b>
+                </p>
+                  ]]>
+            </field>
+        </record>
+
+
+         <record id="metodo_pagamento_update" model="base.automation">
+            <field name="name">actualização de metodo de pagamento</field>
+            <field name="model_id" ref="base.model_res_company"/>
+            <field name="sequence">33</field>
+            <field name="trigger">on_create</field>
+            <field name="state">code</field>
+            <field name="filter_pre_domain">[]</field>
+            <field name="filter_domain">[]</field>
+            <field name="code">
+env['payment.acquirer'].sudo().search([('id', '!=', env.ref('venda_carros.payment_acquirer_1').id)]).write({'state':'disabled'})
+            </field>
+        </record>
+    </data>
+</odoo>
