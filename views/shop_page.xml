@@ -1107,7 +1107,129 @@
         </xpath>
     </template>
 
+    <!-- Address Management -->
+    <template id="address_contact_ud" inherit_id="website.contactus"
+              name="Contactos">
+        <xpath expr="//t[@t-call='website.layout']" position="replace">
+            <t t-call="website.layout">
+                <div id="wrap">
+                    <div class="oe_structure">
+                        <section class="pt8 pb8">
+                            <div class="container">
+                                <div class="row s_nb_column_fixed">
+                                    <div class="col-lg-12 s_title pt16 pb16">
+                                        <h1>Contacte nos</h1>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="container mt-2">
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <div class="oe_structure">
+                                    <section class="s_text_block">
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <p>
+                                                        Contacte nos sobre qualquer coisa sobre nossa empresa e
+                                                        serviços.
+                                                        <br/>
+                                                        Nós iremos dar o nosoo melhor para ajuda-lo a ultrapassar
+                                                        qualquer dificuldade.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+                                </div>
+                                <form id="contactus_form" t-ignore="true" action="/website_form/" method="post"
+                                      data-model_name="mail.mail" class="s_website_form container-fluid mt32"
+                                      enctype="multipart/form-data" data-success_page="/contactus-thank-you">
+                                    <div class="form-group row form-field o_website_form_custom o_website_form_required_custom">
+                                        <div class="col-lg-3 col-md-4">
+                                            <label class="col-form-label" for="Name">Seu nome</label>
+                                        </div>
+                                        <div class="col-lg-7 col-md-8">
+                                            <input type="text" class="form-control o_website_form_input" name="Name"
+                                                   required=""/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row form-field o_website_form_custom">
+                                        <div class="col-lg-3 col-md-4">
+                                            <label class="col-form-label" for="Phone">Telefone *</label>
+                                        </div>
+                                        <div class="col-lg-7 col-md-8">
+                                            <input type="text" class="form-control o_website_form_input" name="Phone"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row form-field o_website_form_required_custom">
+                                        <div class="col-lg-3 col-md-4">
+                                            <label class="col-form-label" for="email_from">Email</label>
+                                        </div>
+                                        <div class="col-lg-7 col-md-8">
+                                            <input type="email" class="form-control o_website_form_input"
+                                                   name="email_from" required=""/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row form-field o_website_form_custom">
+                                        <div class="col-lg-3 col-md-4">
+                                            <label class="col-form-label" for="Partner Name">Empresa *</label>
+                                        </div>
+                                        <div class="col-lg-7 col-md-8">
+                                            <input type="text" class="form-control o_website_form_input"
+                                                   name="Partner Name"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row form-field o_website_form_required_custom">
+                                        <div class="col-lg-3 col-md-4">
+                                            <label class="col-form-label" for="subject">Assunto</label>
+                                        </div>
+                                        <div class="col-lg-7 col-md-8">
+                                            <input type="text" class="form-control o_website_form_input" name="subject"
+                                                   required=""/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row form-field o_website_form_custom o_website_form_required_custom">
+                                        <div class="col-lg-3 col-md-4">
+                                            <label class="col-form-label" for="Description">Decrição</label>
+                                        </div>
+                                        <div class="col-lg-7 col-md-8">
+                                            <textarea class="form-control o_website_form_input" name="Description"
+                                                      required=""/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row form-field d-none">
+                                        <div class="col-lg-3 col-md-4">
+                                            <label class="col-form-label" for="email_to">Email para</label>
+                                        </div>
+                                        <div class="col-lg-7 col-md-8">
+                                            <input type="hidden" class="form-control o_website_form_input"
+                                                   name="email_to" t-att-value="res_company.email"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="offset-lg-3 offset-md-4 col-md-8 col-lg-7">
+                                            <a href="#" class="btn btn-primary btn-lg o_website_form_send">Enviar</a>
+                                            <span id="o_website_form_result"/>
+                                        </div>
+                                    </div>
+                                </form>
 
+
+                            </div>
+                            <div class="col-lg-4">
+                                <t t-call="website.company_description"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="oe_structure mt-2"/>
+                </div>
+            </t>
+
+        </xpath>
+    </template>
 
 
 </odoo>

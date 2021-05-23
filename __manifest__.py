@@ -24,6 +24,7 @@
         'views/shop_page.xml',
         'views/templates.xml',
          'views/sale_order_view.xml',
+        'views/views.xml',
         'report/sales_check_report.xml',
         'report/report_header.xml',
         'email/templates_de_cotacoes.xml',
