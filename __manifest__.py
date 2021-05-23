@@ -3,24 +3,20 @@
     'name': "venda_carros",
 
     'summary': """
-        Short (1 phrase/line) summary of the module's purpose, used as
-        subtitle on modules listing or apps.openerp.com""",
+    SISTEMA DE GESTÃO DE VENDA DE CARROS
+        """,
 
     'description': """
-        Long description of module's purpose
+         SISTEMA DE GESTÃO DE VENDA DE CARROS
     """,
 
-    'author': "My Company",
-    'website': "http://www.yourcompany.com",
-
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/13.0/odoo/addons/base/data/ir_module_category_data.xml
-    # for the full list
-    'category': 'Uncategorized',
+    'author': "Daniel AC",
+    'website': "http://github.com/daneiluac",
+    'category': 'website',
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'base_automation', 'website_sale','website_sale_stock'],
+    'depends': ['base', 'base_automation', 'website_sale', 'website_sale_stock'],
 
     # always loaded
     'data': [
