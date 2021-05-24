@@ -50,6 +50,7 @@ class ProductTemplate(models.Model):
                 related_vals['packaging_ids'] = vals['packaging_ids']
             if vals.get('inventory_availability'):
                 related_vals['inventory_availability'] = "always"
+                related_vals['is_published'] = True
             if related_vals:
                 template.write(related_vals)
 
